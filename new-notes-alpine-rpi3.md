@@ -55,7 +55,7 @@ dhcp-range=set:lan6,::1,constructor:eth0,ra-only
 dhcp-range=set:wlan4,192.168.5.100,192.168.5.199,255.255.255.0,12h
 dhcp-option=tag:wlan4,option:router,192.168.5.1
 # WLAN/wlan0 - IPv6
-dhcp-range=set:wlan6,::5,constructor:wlan0
+dhcp-range=set:wlan6,::5,constructor:wlan0,ra-only
 ```
 
 and finally `/etc/network/interfaces`:
@@ -71,6 +71,7 @@ iface eth0 inet static
 iface eth0 inet6 static
   address 2001:xxxx:yyyy:1::2 # replace xxxx:yyyy
   netmask 64
+  gateway fe80::zzzz:zzzz:zzzz:zzzz # replace
 
 auto wlan0
 iface wlan0 inet static
@@ -82,3 +83,8 @@ iface wlan0 inet6 static
 ```
 
 On my default gateway (192.168.1.1) I added two static routes (one IPv4, one IPv6) pointing to 192.168.1.2 (for a route to 192.168.5.0/24) and to 2001:xxxx:yyyy:1::2 (for a route to 2001:xxxx:yyyy:5::/64).
+
+Also: the BRCM firmware for the wireless interface crashes in `g` mode, so in `/etc/hostapd.conf` I set:
+```
+hw_mode=b
+```
